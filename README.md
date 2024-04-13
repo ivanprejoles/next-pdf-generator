@@ -23,7 +23,7 @@ Mostly used for fast pdf making, and no setup needed, just feed-in data like dat
 ![Image of model type visitor from next template generator.](/assets/images/modelTypeVisit.png)
 
 <br>
-<br>
+
 2. User Model
 
 <br>
