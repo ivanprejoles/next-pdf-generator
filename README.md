@@ -4,7 +4,7 @@ Under React Framework NextJs, next template generator is built upon [Pdfme](http
 <br>
 <br>
 ## Models
-The application has 2 models to be used by user for specific needs.
+The library offers 2 models designed to address different user needs.
 <br>
 
 ### Models status
@@ -16,7 +16,7 @@ The application has 2 models to be used by user for specific needs.
 
 <br>
 
-Mostly used for fast pdf making, and no setup needed, just feed-in data like data from sheet and pdf template. But limited in features compared to another model.
+Suitable for generating PDFs rapidly. No setup is necessary; simply feed in data and a template.  It offers basic functionality, but may lack the advanced features found in other models.
 
 <br>
 
@@ -28,7 +28,7 @@ Mostly used for fast pdf making, and no setup needed, just feed-in data like dat
 
 <br>
 
-User can use their data for future use and add more template in one account. Can also share the link of the form type pdf. It needs setup of account an storage.
+This User model lets you save and reuse your data for future use, expand your template library by adding custom templates to your account, and can share form for automation with ease using shared links.
 
 <br>
 
