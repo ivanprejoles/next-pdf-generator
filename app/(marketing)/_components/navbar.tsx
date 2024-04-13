@@ -11,7 +11,7 @@ export const Navbar = () => {
         <Logo />  
         <div className="space-x-4 md:w-auto flex items-center justify-between w-full">
           <ModeToggle />
-          {/* <Button size="default" variant="outline" className="py-0">
+          <Button size="default" variant="outline" className="py-0">
             <Link href="/sign-in">
               Login
             </Link>
@@ -20,7 +20,7 @@ export const Navbar = () => {
             <Link href="/sign-up">
               Get Taskify for free
             </Link>
-          </Button> */}
+          </Button>
         </div>
       </div>
     </header>

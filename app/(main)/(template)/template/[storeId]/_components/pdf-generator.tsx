@@ -11,8 +11,7 @@ import { cn } from "@/lib/utils";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import axios from "axios";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-import { Menubar } from "@radix-ui/react-menubar";
-import { MenubarContent, MenubarItem, MenubarMenu, MenubarRadioGroup, MenubarRadioItem, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from "@/components/ui/menubar";
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarRadioGroup, MenubarRadioItem, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from "@/components/ui/menubar";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const headerHeight = 65;
@@ -182,7 +181,7 @@ const PdfGenerator = () => {
     return (  
         <BackgroundGradient className="rounded-[22px] w-full bg-white dark:bg-zinc-900">
             {/* <BackgroundBeams /> */}
-            {/* {(mode === 'design')
+            {(mode === 'design')
               ? (      
                 <header
                     className=" flex-row justify-between items-center p-2 w-auto h-[56px] z-20 repative md:absolute"
@@ -194,7 +193,7 @@ const PdfGenerator = () => {
                     >
                         <Menubar>
                             <MenubarMenu>
-                                <MenubarSubTrigger>{mode}</MenubarSubTrigger>
+                                <MenubarTrigger>{mode}</MenubarTrigger>
                                 <MenubarContent>
                                     <MenubarRadioGroup value={mode}>
                                         <MenubarRadioItem onClick={() => {onChangeMode('design')}} value="design">Design</MenubarRadioItem>
@@ -306,8 +305,8 @@ const PdfGenerator = () => {
                         onGeneratePDF={() =>generatePDF(User.current)}
                     />
                 )
-            } */}
-    <header className="z-50" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginRight: 120, }}>
+            }
+    {/* <header className="z-50" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginRight: 120, }}>
         <Menubar>
             <MenubarMenu>
                 <MenubarTrigger>{mode}</MenubarTrigger>
@@ -353,7 +352,7 @@ const PdfGenerator = () => {
         <button onClick={onResetTemplate}>Reset Template</button>
         <span style={{ margin: "0 1rem" }}>/</span>
         <button onClick={() => generatePDF(User.current)}>Generate PDF</button>
-      </header>
+      </header> */}
       
         <div 
             ref={UserRef} 

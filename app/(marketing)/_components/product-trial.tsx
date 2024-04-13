@@ -86,7 +86,7 @@ export function ProductTrial() {
         </p>
  
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          {"This template automation is free to use, with limited features from actual one inside the page. Don't worry, actual one does not need price for now."}
+          {"This template automation is free to use, with limited features from main model inside the page. Don't worry, everyhing is free."}
         </p>
       </BackgroundGradient>
   );
