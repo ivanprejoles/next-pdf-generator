@@ -6,14 +6,14 @@ Under React Framework NextJs, next template generator is built upon [Pdfme](http
 ## Models
 The application has 2 models to be used by user for specific needs.
 <br>
-<br>
+
 ### Models status
 - [x] Visitor Model is completed :tada:
 - [ ] User Model is not yet completed
 <br>
-<br>
+
 1. Visitor Model
-2. 
+
 <br>
 
 Mostly used for fast pdf making, and no setup needed, just feed-in data like data from sheet and pdf template. But limited in features compared to another model.
@@ -24,7 +24,7 @@ Mostly used for fast pdf making, and no setup needed, just feed-in data like dat
 
 <br>
 <br>
-3. User Model
+2. User Model
 
 <br>
 
