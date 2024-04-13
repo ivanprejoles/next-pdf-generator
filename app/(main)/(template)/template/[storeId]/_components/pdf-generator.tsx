@@ -43,7 +43,7 @@ const PdfGenerator = () => {
 
         let template: Template = getTemplate();
         let inputs = template.sampledata ?? [{}];
-        
+        // testing comment
         try {
             fetchData()
             let templateString = localStorage.getItem(`${params.storeId}template`)
