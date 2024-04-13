@@ -2,6 +2,13 @@
 Under React Framework NextJs, next template generator is built upon [Pdfme](https://github.com/pdfme/pdfme).
 
 
+
+
+
+
+
+
+
 ## Models
 The application has 2 models to be used by user for specific needs.
 
