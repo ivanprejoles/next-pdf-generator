@@ -29,8 +29,7 @@ const PdfGenerator = () => {
         (localStorage.getItem('mode') as Mode ?? 'design')
     )
 
-    const buildUser = (mode: Mode) => {
-        
+    useEffect(() => {
         const fetchData = async () => {
             await axios.post(`/api/template/${params.storeId}`)
             .catch((error) => {
@@ -39,11 +38,11 @@ const PdfGenerator = () => {
                 console.log(response)
             })
         }
-
-        let template: Template = getTemplate();
-        let inputs = template.sampledata ?? [{}];
-        // testing comment
+        
+        let template: Template = getTemplate()
         try {
+            template = template as Template;
+            let inputs = template.sampledata ?? [{}];
             fetchData()
             let templateString = localStorage.getItem(`${params.storeId}template`)
             const templateJson = templateString
@@ -51,52 +50,132 @@ const PdfGenerator = () => {
               : getTemplate();
             checkTemplate(templateJson)
             template  = templateJson as Template
+            getFontsData().then((font) => {
+                if (UserRef.current) {
+                    if (mode === 'design') {
+                        User.current = new Designer({
+                            domContainer: UserRef.current,
+                            template,
+                            options: {
+                                font,
+                                theme: {
+                                  token: {
+                                    colorPrimary: 'blue',
+    
+                                  },
+                                },
+                            },
+                            plugins: getPlugins(),
+                        });
+                        User.current.onSaveTemplate(onLocalSaveTemplate)
+                    } else {
+                        User.current = new (mode === 'form' ? Form : Viewer)({
+                            domContainer: UserRef.current,
+                            template,
+                            inputs,
+                            options: {
+                                font,
+                                labels: {'clear': 'clear'},
+                                theme: {
+                                    token: {
+                                        colorPrimary: '#25c2a0'
+                                    },
+                                },
+                            },
+                            plugins: getPlugins(),
+                        })
+                    } 
+                    const child = UserRef?.current.children[0] as HTMLElement
+                    child.style.backgroundColor = 'transparent';
+                }
+            });
+            return () => {
+                if (User.current) {
+                    User.current.destroy();
+                }
+            };
         } catch (error) {
             localStorage.getItem(`${params.storeId}template`)
         }
 
-        getFontsData().then((font) => {
-            if (UserRef.current) {
-                if (mode === 'design') {
-                    User.current = new Designer({
-                        domContainer: UserRef.current,
-                        template,
-                        options: {font},
-                        plugins: getPlugins(),
-                    });
-                    User.current.onSaveTemplate(onLocalSaveTemplate)
-                } else {
-                    User.current = new (mode === 'form' ? Form : Viewer)({
-                        domContainer: UserRef.current,
-                        template,
-                        inputs,
-                        options: {
-                            font,
-                            labels: {'clear': 'clear'},
-                            theme: {
-                                token: {
-                                    colorPrimary: '#25c2a0'
-                                },
-                            },
-                        },
-                        plugins: getPlugins(),
-                    })
-                } 
-                const child = UserRef?.current.children[0] as HTMLElement
-                child.style.backgroundColor = 'transparent';
-            }
-        });
-    }
+        
+    }, [UserRef, mode, params.storeId])
+    
+    // const buildUser = (mode: Mode) => {
+        
+    //     const fetchData = async () => {
+    //         await axios.post(`/api/template/${params.storeId}`)
+    //         .catch((error) => {
+    //             console.log(error)
+    //         }).then((response) => {
+    //             console.log(response)
+    //         })
+    //     }
 
-    // now works on designer, not only input and form
+    //     let template: Template = getTemplate();
+    //     let inputs = template.sampledata ?? [{}];
+    //     // testing comment
+    //     try {
+    //         fetchData()
+    //         let templateString = localStorage.getItem(`${params.storeId}template`)
+    //         const templateJson = templateString
+    //           ? JSON.parse(templateString)
+    //           : getTemplate();
+    //         checkTemplate(templateJson)
+    //         template  = templateJson as Template
+    //     } catch (error) {
+    //         localStorage.getItem(`${params.storeId}template`)
+    //     }
+
+    //     getFontsData().then((font) => {
+    //         if (UserRef.current) {
+    //             if (mode === 'design') {
+    //                 User.current = new Designer({
+    //                     domContainer: UserRef.current,
+    //                     template,
+    //                     options: {
+    //                         font,
+    //                         theme: {
+    //                           token: {
+    //                             colorPrimary: 'blue',
+
+    //                           },
+    //                         },
+    //                     },
+    //                     plugins: getPlugins(),
+    //                 });
+    //                 User.current.onSaveTemplate(onLocalSaveTemplate)
+    //             } else {
+    //                 User.current = new (mode === 'form' ? Form : Viewer)({
+    //                     domContainer: UserRef.current,
+    //                     template,
+    //                     inputs,
+    //                     options: {
+    //                         font,
+    //                         labels: {'clear': 'clear'},
+    //                         theme: {
+    //                             token: {
+    //                                 colorPrimary: '#25c2a0'
+    //                             },
+    //                         },
+    //                     },
+    //                     plugins: getPlugins(),
+    //                 })
+    //             } 
+    //             const child = UserRef?.current.children[0] as HTMLElement
+    //             child.style.backgroundColor = 'transparent';
+    //         }
+    //     });
+    // }
+
+    // now works on designer, not only on input and form
     const onChangeMode = (type: Mode) => {
         const value = type as Mode;
         setMode(value)
         localStorage.setItem('mode', value)
-        buildUser(value)
     }
     
-    //R
+    // changing the base pdf as background
     const onChangeBasePDF = (e: React.ChangeEvent<HTMLInputElement>) => {
         console.log(mode)
         if (e.target && e.target.files && mode === 'design') {
@@ -114,8 +193,7 @@ const PdfGenerator = () => {
         }
     }
 
-    // R
-    //for local storage only (only works on designer)
+    // downloads the template into your device to be used when uploading the template
     const onDownloadTemplate = () => {
         if (User.current && mode === 'design') {
           downloadJsonFile(User.current.getTemplate(), `${params.storeId}template`);
@@ -124,7 +202,8 @@ const PdfGenerator = () => {
       };
 
 
-    //needs to be save in the server ( no server yet, and only works on designer )
+    // saves data to local storage. It's essential to update the data by saving it inside  the local storage to persist the data when changing the mode
+    // it's needed to have a database to save updated data
     const onLocalSaveTemplate = (template?: Template) => {
         if (User.current && mode === 'design') {
             localStorage.setItem(
@@ -135,7 +214,7 @@ const PdfGenerator = () => {
         }
     }
 
-    //save on database
+    // localstorage data will be saved manually in the server
     const onRemoteSaveTemplate = async () => {
         if (User.current && localStorage.getItem(`${params.storeId}template`) && mode === 'design') {
             const localStorageData = localStorage.getItem(`${params.storeId}template`)
@@ -150,23 +229,14 @@ const PdfGenerator = () => {
         }
     }
     
-    //needs to have server to reset template ( only works on designer)
+    // resets the local storage template
+    // database needs localstorage of this template to manually save the data to the server, or else data will only be in the local storage
     const onResetTemplate = () => {
         if (User.current && mode === 'design') {
             User.current.updateTemplate(getTemplate())
             localStorage.removeItem('template')
         }
     }
-
-    if (UserRef != prevUserRef) {
-        if (prevUserRef && User.current) {
-            console.log('useref prev')
-            User.current.destroy();
-        }
-        buildUser(mode);
-        setPrevUserRef(UserRef);
-    }
-
 
     const fileClick = () => {
         const fileInput = document.getElementById('loadtemp');
