@@ -1,3 +1,4 @@
+
 'use client'
 
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
@@ -26,9 +27,9 @@ import {
     SelectValue,
   } from "@/components/ui/select"
 
-import React, { useState } from "react"
+import React from "react"
 
-interface FormViewNavbarProps {
+interface MenubarProps {
     mode: "form" | "viewer" | 'design',
     onChangeMode: (mode: 'form'|'viewer'|'design') => void,
     onLoadTemplate?: (e: React.ChangeEvent<HTMLInputElement>) => void,
@@ -41,7 +42,7 @@ interface FormViewNavbarProps {
 }
 
   
-export function FormViewNavbar({
+export function PdfMenubar({
     mode,
     onChangeMode,
     onLoadTemplate,
@@ -51,7 +52,7 @@ export function FormViewNavbar({
     onResetTemplate,
     onLangChange,
     lang
-}: FormViewNavbarProps) {
+}: MenubarProps) {
 
     const fileClick = () => {
         const fileInput = document.getElementById('loadtemp');
