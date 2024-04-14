@@ -35,7 +35,7 @@ const MarketingPage = () => {
   ];
 
   return (
-    <div className="flex items-center justify-center flex-col bg-[#dedcd7] dark:bg-black">
+    <div className="flex items-center justify-center flex-col bg-[#d4d2ce] dark:bg-black">
       <div className={cn(
         "flex items-center justify-center flex-col",
         headingFont.className,
@@ -52,8 +52,8 @@ const MarketingPage = () => {
             <SpotLightProductBlock />
           </HoverBorderGradient>
         </div>
-        <div className="pt-[18rem] pb-[10rem] px-[10px] md:px-[5rem] lg:px-[10rem] w-full dark:bg-black bg-white  dark:bg-grid-white/[0.2] bg-grid-black/[0.2] relative flex items-center justify-center">
-          <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_-50%,black)]"></div>
+        <div className="pt-[18rem] pb-[10rem] px-[10px] md:px-[5rem] lg:px-[10rem] w-full dark:bg-black bg-slate-300  dark:bg-grid-white/[0.2] bg-grid-black/[0.2] relative flex items-center justify-center">
+          <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-slate-300 [mask-image:radial-gradient(ellipse_at_center,transparent_-50%,black)]"></div>
             <ProductTrial />
           </div>
         <div className=" w-full h-[90rem]">
