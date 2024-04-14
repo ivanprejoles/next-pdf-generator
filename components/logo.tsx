@@ -19,7 +19,7 @@ export const Logo = () => {
           width={100}
         />
         <p className={cn(
-          "text-lg text-neutral-700",
+          "text-lg text-neutral-700 dark:text-white",
           headingFont.className,
         )}>
           PDF Gen

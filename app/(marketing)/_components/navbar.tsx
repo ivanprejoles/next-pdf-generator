@@ -11,14 +11,14 @@ export const Navbar = () => {
         <Logo />  
         <div className="space-x-4 md:w-auto flex items-center justify-between w-full">
           <ModeToggle />
-          <Button size="default" variant="outline" className="py-0">
-            <Link href="/sign-in">
+          <Button size="default" variant="outline" className="py-0" disabled>
+            <Link href="/sign-in" >
               Login
             </Link>
           </Button>
-          <Button size="default" className="py-0">
+          <Button size="default" className="py-0"  disabled>
             <Link href="/sign-up">
-              Get Taskify for free
+              Get PdfGen for free
             </Link>
           </Button>
         </div>
