@@ -14,7 +14,7 @@ The library offers 2 models designed to address different user needs.
 - [x] User Model is completed :tada:
 <br>
 
-1. Visitor Model
+1. Guest Model
 
 <br>
 
