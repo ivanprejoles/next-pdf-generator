@@ -26,6 +26,10 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useCreateModal } from '@/hooks/use-create-store-modal';
 
+import { addSwitcher } from '@/lib/reduxFeatures/templateslice';
+import { useAppDispatch } from '@/lib/hooks';
+import { toastError, toastSuccess } from '@/lib/toast-method';
+
 const formSchema = z.object({
     name: z.string().min(1, {
         message: 'Template name is required.'
@@ -33,7 +37,7 @@ const formSchema = z.object({
 })
 
 const AddStoreModal = () => {
-
+    const dispatch = useAppDispatch()
     const Router = useRouter()
     const { isOpen, onClose } = useCreateModal()
     
@@ -46,15 +50,28 @@ const AddStoreModal = () => {
 
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        try {
-            await axios.post('/api/template', values)
-
-            form.reset()
-            Router.refresh()
-            window.location.reload()
-        } catch (error) {
-            console.log(error)
-        }
+        await axios.post('/api/store', values)
+        .then((response:any) => {
+            if (response?.data && response.data?.id) {
+                const template = response.data
+                form.reset()
+                onClose()
+                dispatch(addSwitcher({
+                    key: response.data.id, value: {
+                        label: template.mame,
+                        value: template.id,
+                        shareCode: template.shareCode
+                    }
+                }))
+                form.reset()
+                Router.push(`/template/${template.id}`)
+                toastSuccess('New Store Added')
+            }
+        })
+        .catch(() => {
+            toastError('We encountered an error adding new server. Please check your network connection and try again.')
+            console.error('[New Server] : cannot add new server')
+        })
     }
 
     const handleClose = () => {

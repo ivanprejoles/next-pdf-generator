@@ -72,7 +72,7 @@ export function ProductTrial() {
               />)
             : (
               <PDFContent 
-                onShow={() => {setShowContent(true); setUse(false)}}
+                onShow={() => {setUse(true); setShowContent(true)}}
                 setCsvData={setCsvData}  
                 setCsvHeader={setCsvHeader}
                 setPdfData={setPdfData}
@@ -86,7 +86,7 @@ export function ProductTrial() {
         </p>
  
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          {"This template automation is free to use, with limited features from main model inside the page. Don't worry, everyhing is free."}
+          {"This template automation is free and does not need an account, with limited features from main model inside the page. Don't worry, Main model is also free but needs an account to access features like template storage with manual saving of data, public link with template form and datasheet-to-pdfs converter."}
         </p>
       </BackgroundGradient>
   );

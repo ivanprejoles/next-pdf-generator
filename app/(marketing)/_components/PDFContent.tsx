@@ -7,6 +7,8 @@ import { read, utils } from "xlsx";
 import SubmitButton from "./submitButton";
 import ContentButton from "./contentButton";
 import { useBasePDF } from "@/hooks/use-free-upload-pdf";
+import { FaFilePdf} from 'react-icons/fa6'
+import { CiViewTable } from "react-icons/ci";
 
 interface PDFContentInterface {
   onShow: () => void,
@@ -88,8 +90,9 @@ export function PDFContent({
     >
       {/* Button */}
       <div className="flex w-full p-3 items-center justify-evenly absolute top-[20%] z-50">
-          <ContentButton 
-            title='Upload PDF'
+          <ContentButton
+            Icon={FaFilePdf} 
+            title='Your Template'
             verified={pdfData !== null}
             onClick={() => {document.getElementById('pdfInput')?.click()}}
             input={(
@@ -102,8 +105,9 @@ export function PDFContent({
               />
             )}
           />
-          <ContentButton 
-            title='Upload Sheet'
+          <ContentButton
+            Icon={CiViewTable}  
+            title='Your Data Sheet'
             verified={csvData.length > 0}
             onClick={() => {document.getElementById('csvInput')?.click()}}
             input={(
@@ -117,7 +121,7 @@ export function PDFContent({
             )}
           />
           <SubmitButton
-            title="Make Template"
+            title="Set Up Pdf"
             disabled={csvData.length <= 0 || pdfData === null}
             onClick={onShow}
           />

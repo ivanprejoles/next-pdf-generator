@@ -4,19 +4,8 @@ import { generate } from '@pdfme/generator';
 import {
   text,
 } from '@pdfme/schemas';
-
-const fontObjList = [
-    {
-      fallback: true,
-      label: 'NotoSerifJP-Regular',
-      url: '/fonts/NotoSerifJP-Regular.otf',
-    },
-    {
-      fallback: false,
-      label: 'NotoSansJP-Regular',
-      url: '/fonts/NotoSansJP-Regular.otf',
-    },
-];
+import {toastError, toastWarning} from '@/lib/toast-method'
+import fontObjList from '@/lib/fontsLibrary';
 
 export const getFontsData = async () => {
     const fontDataList = await Promise.all(
@@ -50,7 +39,6 @@ export const readFile = (file: File | null, type: 'text' | 'dataURL' | 'arrayBuf
 };
 
 export const cloneDeep = (obj: any) => JSON.parse(JSON.stringify(obj));
-
 export const getPlugins = () => {
     return {
       Text: text,
@@ -70,28 +58,22 @@ export const generatePDF = async (currentRef: Designer | Form | Viewer | null) =
     const pdf = await generate({
       template,
       inputs,
-      options: { font, title: 'pdfGen' },
+      options: { font, title: 'pdfGen (view)' },
       plugins: getPlugins(),
     });
   
     const blob = new Blob([pdf.buffer], { type: 'application/pdf' });
     window.open(URL.createObjectURL(blob));
   } catch (error) {
-    console.error('[pdf gen] : only one page is allowed' )
+    console.error('[View PDF] : Currently supporting single-page PDFs' )
+    toastWarning('Currently supporting single-page PDFs')
+    toastWarning('For urgent 2-page use, copy-paste the content from page 1 to page 2')
   }
 };
 
 export const getTemplateContainer = (): Template => ({
-    schemas: [
-        {
-
-        }
-    ],
+    schemas: [{}],
     basePdf: 'data:application/pdf;base64,JVBERi0xLjQKJdPr6eEKMSAwIG9iago8PC9UaXRsZSAobm9faXRlbSkKL1Byb2R1Y2VyIChTa2lhL1BERiBtMTI1IEdvb2dsZSBEb2NzIFJlbmRlcmVyKT4+CmVuZG9iagozIDAgb2JqCjw8L2NhIDEKL0JNIC9Ob3JtYWw+PgplbmRvYmoKNCAwIG9iago8PC9MZW5ndGggODQ+PiBzdHJlYW0KMSAwIDAgLTEgMCA3OTIgY20KcQouNzUgMCAwIC43NSAwIDAgY20KMSAxIDEgUkcgMSAxIDEgcmcKL0czIGdzCjAgMCA4MTYgMTA1NiByZQpmClEKCmVuZHN0cmVhbQplbmRvYmoKMiAwIG9iago8PC9UeXBlIC9QYWdlCi9SZXNvdXJjZXMgPDwvUHJvY1NldCBbL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSV0KL0V4dEdTdGF0ZSA8PC9HMyAzIDAgUj4+Pj4KL01lZGlhQm94IFswIDAgNjEyIDc5Ml0KL0NvbnRlbnRzIDQgMCBSCi9TdHJ1Y3RQYXJlbnRzIDAKL1BhcmVudCA1IDAgUj4+CmVuZG9iago1IDAgb2JqCjw8L1R5cGUgL1BhZ2VzCi9Db3VudCAxCi9LaWRzIFsyIDAgUl0+PgplbmRvYmoKNiAwIG9iago8PC9UeXBlIC9DYXRhbG9nCi9QYWdlcyA1IDAgUgovVmlld2VyUHJlZmVyZW5jZXMgPDwvVHlwZSAvVmlld2VyUHJlZmVyZW5jZXMKL0Rpc3BsYXlEb2NUaXRsZSB0cnVlPj4+PgplbmRvYmoKeHJlZgowIDcKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDE1IDAwMDAwIG4gCjAwMDAwMDAyNjcgMDAwMDAgbiAKMDAwMDAwMDA5OCAwMDAwMCBuIAowMDAwMDAwMTM1IDAwMDAwIG4gCjAwMDAwMDA0NTUgMDAwMDAgbiAKMDAwMDAwMDUxMCAwMDAwMCBuIAp0cmFpbGVyCjw8L1NpemUgNwovUm9vdCA2IDAgUgovSW5mbyAxIDAgUj4+CnN0YXJ0eHJlZgo2MjcKJSVFT0YK',
-    sampledata: [
-        {
-
-        }
-    ],
+    sampledata: [{}],
     columns: []
 })

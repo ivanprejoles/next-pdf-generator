@@ -12,29 +12,32 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 
 import { useCreateModal } from "@/hooks/use-create-store-modal";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
-interface StoreSwitcherProps extends PopoverTriggerProps {
-    items: Stores[]
+interface StoreSwitcherProps extends PopoverTriggerProps {}
+
+type SwitcherType = {
+    label: string,
+    value: string,
+    shareCode: string
 }
 
 export default function StoreSwitcher ({
     className,
-    items = []
 }: StoreSwitcherProps) {
     const StoreModal = useCreateModal()
     const Params = useParams()
     const Router = useRouter()
+    const template = useAppSelector((state: any) => state.userTemplate)
 
     const [open, setOpen] = useState(false)
 
-    const formattedItems = items.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
 
-    const currentStore = formattedItems.find((item) => item.value === Params.storeId)
+    const formattedItems: SwitcherType[] = Object.values(template.value.switcher)
+
+    const currentStore = formattedItems.find((item: SwitcherType) => item.value === Params.storeId)
 
     const onStoreSelect = (store: {value: string, label: string}) => {
         setOpen(false)

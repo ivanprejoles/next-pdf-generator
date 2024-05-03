@@ -1,4 +1,5 @@
 export const siteConfig = {
-    name: 'Pdf Gen',
-    description: 'A pdf automation to build your template much faster than before.',
+    name: 'PDF Gen',
+    template: 'Template | PDF Gen',
+    description: 'Boost Your Productivity: Create PDFs with Drag-and-Drop Ease',
 }

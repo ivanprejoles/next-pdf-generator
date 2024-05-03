@@ -13,355 +13,449 @@ import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarRadioGroup, MenubarRadioItem, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from "@/components/ui/menubar";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const headerHeight = 65;
+import { addTemplate, removeTemplate } from "@/lib/reduxFeatures/templateslice";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useShareModal } from "@/hooks/use-share-link-modal";
+import { Button } from "@/components/ui/button";
+import { FaRegFileImage } from "react-icons/fa6";
+import { IoShareSocialOutline } from "react-icons/io5";
+import { FaRegSave } from "react-icons/fa";
+import { LuFileEdit } from "react-icons/lu";
+import { MdDelete, MdDownload } from "react-icons/md";
+import { GoKebabHorizontal } from "react-icons/go";
+import { TbFileDownload, TbFileUpload } from "react-icons/tb";
+import TooltipWrap from "@/components/tool-tip-wrapper";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { CiViewTable } from "react-icons/ci";
+import { toastDismiss, toastError, toastLoading, toastSuccess, toastWarning } from "@/lib/toast-method";
+import delayFunction from "@/lib/delayMethod";
+import { read, utils } from "xlsx";
+import JSZip from "jszip";
+import { generate } from "@pdfme/generator";
+
+const headerHeight = 100;
 
 type Mode = "form" | "viewer" | 'design';
 
 const PdfGenerator = () => {
+    const dispatch = useAppDispatch()
+    const reduxTemplate = useAppSelector((state: any) => state.userTemplate.value.templates)
+    const {storeId} = useParams<{storeId: string}>()
+    const {
+        onOpen
+    } = useShareModal()
+
     const UserRef = useRef<HTMLDivElement | null>(null);
     const User = useRef<Viewer | Form | Designer | null>(null); 
-    const [lang, setLang] = useState<Lang>('en');
-    const params = useParams()
+    const hiddenBasePdf = useRef<HTMLInputElement>(null)
+    const hiddenLoadTemplate = useRef<HTMLInputElement>(null)
+    const hiddenLoadCSV = useRef<HTMLInputElement>(null)
+    const toastId = useRef<any>(null)
+    // const hiddenLoadSheetHeader = useRef<HTMLInputElement>(null)
+    // const hiddenLoadSheetData = useRef<HTMLInputElement>(null)
 
+    const [isRequesting, setIsRequesting] = useState(false)
     const [mode, setMode] = useState<Mode>(
         (localStorage.getItem('mode') as Mode ?? 'design')
     )
+    const [loading, setLoading] = useState(false);
+    
+    let fetching = useRef(true);
 
+    // add auto same such as settimeout
+    // add checkbox
+    
     useEffect(() => {
+        let template: Template = getTemplate()
+
         const fetchData = async () => {
-            await axios.post(`/api/template/${params.storeId}`)
+            await axios.post(`/api/template/${storeId}`, {emptyTemplate: JSON.stringify(template)})
+            .then((response) => {
+                dispatch(addTemplate({key: storeId, value: JSON.parse(response?.data.templateData)}))
+            })
             .catch((error) => {
-                console.log(error)
-            }).then((response) => {
-                console.log(response)
+                toastError('We encountered an error loading your data. Please check your network connection and try again.')
+                console.error('[Load Data] : cannot load the data')
+            })
+            .finally(() => {
+                fetching.current = true
+                toastDismiss(toastId.current);  
             })
         }
-        
-        let template: Template = getTemplate()
-        try {
-            template = template as Template;
-            let inputs = template.sampledata ?? [{}];
-            fetchData()
-            let templateString = localStorage.getItem(`${params.storeId}template`)
-            const templateJson = templateString
-              ? JSON.parse(templateString)
-              : getTemplate();
-            checkTemplate(templateJson)
-            template  = templateJson as Template
-            getFontsData().then((font) => {
-                if (UserRef.current) {
-                    if (mode === 'design') {
-                        User.current = new Designer({
-                            domContainer: UserRef.current,
-                            template,
-                            options: {
-                                font,
-                                theme: {
-                                  token: {
-                                    colorPrimary: 'blue',
-    
-                                  },
-                                },
-                            },
-                            plugins: getPlugins(),
-                        });
-                        User.current.onSaveTemplate(onLocalSaveTemplate)
-                    } else {
-                        User.current = new (mode === 'form' ? Form : Viewer)({
-                            domContainer: UserRef.current,
-                            template,
-                            inputs,
-                            options: {
-                                font,
-                                labels: {'clear': 'clear'},
-                                theme: {
-                                    token: {
-                                        colorPrimary: '#25c2a0'
+
+        if (!reduxTemplate[storeId]) {
+            if (fetching.current) {
+                fetching.current = false
+                toastId.current = toastLoading('Preparing your data...')
+                fetchData()
+            }
+        } else {
+            try {
+                if (reduxTemplate[storeId]) {
+                    template = reduxTemplate[storeId] as Template
+                    let inputs = template.sampledata ?? [{}];
+                    checkTemplate(template)
+                    getFontsData().then((font) => {
+                        if (UserRef.current) {
+                            if (mode === 'design') {
+                                User.current = new Designer({
+                                    domContainer: UserRef.current,
+                                    template,
+                                    options: {
+                                        font,
+                                        theme: {
+                                          token: {
+                                            colorTextLightSolid: 'black',
+                                          },
+                                        },
                                     },
-                                },
-                            },
-                            plugins: getPlugins(),
-                        })
-                    } 
-                    const child = UserRef?.current.children[0] as HTMLElement
-                    child.style.backgroundColor = 'transparent';
+                                    plugins: getPlugins(),
+                                });
+                                User.current.onSaveTemplate(onLocalSaveTemplate)
+                            } else {
+                                User.current = new (mode === 'form' ? Form : Viewer)({
+                                    domContainer: UserRef.current,
+                                    template,
+                                    inputs,
+                                    options: {
+                                        font,
+                                        labels: {'clear': 'clear'},
+                                        theme: {
+                                        },
+                                    },
+                                    plugins: getPlugins(),
+                                })
+                            } 
+                            const child = UserRef.current?.children[0] as HTMLElement
+                            child.style.backgroundColor = 'transparent';
+                        }
+        
+                        return () => {
+                            if (User.current) {
+                                User.current.destroy();
+                            }
+                        };
+                    })
                 }
-            });
-            return () => {
-                if (User.current) {
-                    User.current.destroy();
-                }
-            };
-        } catch (error) {
-            localStorage.getItem(`${params.storeId}template`)
+            } catch (error) {
+                toastError('Error Building Template')
+                console.error('[Template-Making Error] : ', error)
+                reduxTemplate[storeId]
+            }
         }
-    }, [UserRef, mode, params.storeId])
-    
-    // now works on designer, not only in the input and form
+    }, [ mode, storeId, reduxTemplate ])
+        
     const onChangeMode = (type: Mode) => {
         const value = type as Mode;
+        if (mode === 'design') {
+            onLocalSaveTemplate()
+        }
         setMode(value)
         localStorage.setItem('mode', value)
     }
-    
-    // changing the base pdf as background
-    const onChangeBasePDF = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(mode)
-        if (e.target && e.target.files && mode === 'design') {
-            readFile(e.target.files[0], 'dataURL').then( async (basePdf) => {
-                if (User.current) {
-                    User.current.updateTemplate(
-                        Object.assign(cloneDeep(User.current.getTemplate()), {
-                            basePdf
-                        })
-                    )  
-                }
-            })
-        } else {
 
+    const onChangeBasePDF = (e: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            if (e.target && e.target.files && mode === 'design') {
+                readFile(e.target.files[0], 'dataURL').then( async (basePdf) => {
+                    if (User.current) {
+                        User.current.updateTemplate(
+                            Object.assign(cloneDeep(User.current.getTemplate()), {
+                                basePdf
+                            })
+                        )
+                    }
+                })
+            }
+        } catch (error) {
+            toastError('Error Replacing New Base PDF')
+            console.error('[BasePDf-Replacing Error] : ', error)
         }
     }
 
-    // downloads the template into your device to be used when uploading the template
     const onDownloadTemplate = () => {
         if (User.current && mode === 'design') {
-          downloadJsonFile(User.current.getTemplate(), `${params.storeId}template`);
-          console.log(User.current.getTemplate());
+          downloadJsonFile(User.current.getTemplate(), `template`);
         }
       };
 
-
-    // saves data to local storage. It's essential to update the data by saving it inside  the local storage to persist the data when changing the mode
-    // it's needed to have a database to save updated data
-    const onLocalSaveTemplate = (template?: Template) => {
-        if (User.current && mode === 'design') {
-            localStorage.setItem(
-                `${params.storeId}template`,
-                JSON.stringify(template || User.current.getTemplate())
-            )
-            alert('Template Saved')
+    const onLocalSaveTemplate = () => {
+        try {
+            if (User.current && mode === 'design') {
+                dispatch(addTemplate({key: storeId, value: User.current.getTemplate()}))
+            }
+        } catch (error) {
+            console.error('[Local Save] : ',error)
         }
     }
 
-    // localstorage data will be saved manually in the server
     const onRemoteSaveTemplate = async () => {
-        if (User.current && localStorage.getItem(`${params.storeId}template`) && mode === 'design') {
-            const localStorageData = localStorage.getItem(`${params.storeId}template`)
-            await axios.patch(`/api/template/${params.storeId}`, {templateData: localStorageData})
+        if (User.current && reduxTemplate[storeId] && mode === 'design') {
+            const userTemplate = User.current.getTemplate()
+            await axios.patch(`/api/template/${storeId}`, {templateData: JSON.stringify(userTemplate)})
+            .then((response: any) => {
+                if (response.status === 200 && reduxTemplate[storeId] !== userTemplate) {
+                    onLocalSaveTemplate()
+                    toastSuccess('Template Saved')
+                }
+            })
             .catch((error) => {
-                console.log(error)
+                toastError('We encountered an error saving your template. Please check your network connection and try again.')
+                console.error('[Save Template] : cannot save your template')
             })
-            .then(() => {
-                console.log('done')
+            .finally( async () => {
+                await delayFunction(2000)
+                setIsRequesting(false)
             })
+        }
+    }
+
+    const onResetTemplate = async () => {
+        if (User.current && mode === 'design' && !isRequesting) {
+            setIsRequesting(true)
             
-        }
-    }
-    
-    // resets the local storage template
-    // database needs localstorage of this template to manually save the data to the server, or else data will only be in the local storage
-    const onResetTemplate = () => {
-        if (User.current && mode === 'design') {
-            User.current.updateTemplate(getTemplate())
-            localStorage.removeItem('template')
+            let confirmationText = 'Deleting this template is permanent. Confirm?'
+            if (confirm(confirmationText) === false) {
+                return
+            }
+            let blankTemplate = getTemplate()
+            await axios.patch(`/api/template/${storeId}`, {templateData: JSON.stringify(blankTemplate)})
+            .then((response: any) => {
+                if (response.status === 200 && reduxTemplate[storeId]) {
+                    dispatch(addTemplate({key: storeId, value: blankTemplate}))
+                    toastSuccess('Template Reset')
+                }
+            })
+            .catch(() => {
+                toastError('We encountered an error resetting your template. Please check your network connection and try again.')
+                console.error('[Reset Template] : cannot reset your template')
+            })
+            .finally( async () => {
+                await delayFunction(2000)
+                setIsRequesting(false)
+            }) 
         }
     }
 
-    const fileClick = () => {
-        const fileInput = document.getElementById('loadtemp');
-        fileInput?.click();
+    const onDownloadPDFsByZip = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            setIsRequesting(true)
+            toastWarning("WARNING! DOWNLOADING IN PROGRESS. DO NOT CANCEL.")
+            toastId.current = toastLoading("Downloading to ZIP...");
+            const newFile = event.target.files?.[0]
+            if (!newFile) {
+                return
+            }
+
+            if (event.target && event.target.files && event.target.files[0]) {
+                const reader = new FileReader()
+                reader.readAsArrayBuffer(newFile)
+                reader.onload = async (event) => {
+                    if (!event.target?.result) {
+                        return
+                    }
+
+                    const workbook = read(event.target.result, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const dataArray = utils.sheet_to_json(worksheet);
+
+                    const keys = Object.keys(dataArray[0] as {});
+                    const zip = new JSZip()
+                    if (User.current) {
+
+                        const template = User.current?.getTemplate()
+                        for (let i:number = 0; i < dataArray.length; i++) {
+                            const mergedObject: {[key:string]: string}[] = [referenceObject(template.sampledata?.[0], dataArray[i])]
+                            const inputs = mergedObject ?? []
+                            const font = await getFontsData()
+                            const pdf = await generate({
+                                template,
+                                inputs,
+                                plugins: getPlugins(),
+                                options: { font }
+                            })
+                            const blob = new Blob([pdf.buffer], { type: 'application/pdf'})
+                            const fileName = `Generated-PDf ${i+1}.pdf`
+
+                            zip.file(fileName, blob)
+                        }
+                        
+                        const content = await zip.generateAsync({ type: 'blob' });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(content);
+                        link.download = 'Multiple PDF';
+                        link.click();
+
+                        URL.revokeObjectURL(link.href);
+                        toastDismiss(toastId.current);
+                        toastSuccess('pdf downloaded')
+                    } else {
+                        toastDismiss(toastId.current);
+                        toastWarning('Missing Template')
+                        console.warn('[Missing Template] : Missing template. Try to refresh')
+                    }
+                }
+                reader.onerror = (error) => {
+                    toastDismiss(toastId.current);
+                    toastError('Currently supports single-page PDFs')
+                    toastWarning('For urgent 2-page use, copy-paste single input from page 1 to page 2')
+                    console.error('[Protection Error] : Currently supports single-page PDFs')
+                    setIsRequesting(false)
+                    return
+                }
+            }
+        } catch (error) {
+            toastDismiss(toastId.current);
+            toastError('Currently supports single-page PDFs')
+            toastWarning('For urgent 2-page use, copy-paste single input from page 1 to page 2')
+            console.error('[Protection Error] : Currently supports single-page PDFs')
+        } finally {
+            setIsRequesting(false)
+        }
     }
 
-    const changeBaseclick = () => {
-        const fileInput = document.getElementById('basetemp');
-        fileInput?.click();
+    const referenceObject = (referenceObject: any, otherObject: any): {[key: string]: string} => {
+        const mergedObject: any = {};
+
+        for (const key in referenceObject) {
+            if (Object.prototype.hasOwnProperty.call(referenceObject, key)) {
+                if (key in otherObject && otherObject[key] !== '') {
+                    mergedObject[key] = String(otherObject[key]);
+                } else {
+                    mergedObject[key] = String(referenceObject[key]);
+                }
+            }
+        }
+
+        return mergedObject;
     }
+
+    const loadTemplateClick = () => {
+        hiddenLoadTemplate.current?.click()
+    }
+
+    const changeBaseClick = () => {
+        hiddenBasePdf.current?.click()
+    }
+
+    const loadCSVClick = () => {
+        hiddenLoadCSV.current?.click()
+    }
+    // const loadSheetHeaderClick = () => {
+    //     hiddenLoadSheetHeader.current?.click()
+    // }
     
     return (  
-        <BackgroundGradient className="rounded-[22px] w-full bg-white dark:bg-zinc-900">
-            {/* <BackgroundBeams /> */}
-            {(mode === 'design')
-              ? (      
-                <header
-                    className=" flex-row justify-between items-center p-2 w-auto h-[56px] z-20 repative md:absolute"
-                    style={{ display: "flex", marginRight: 120, }}
-                >
-                    <HoverBorderGradient 
-                        containerClassName="rounded-md"
-                        className="dark:bg-black bg-white text-black dark:text-white flex items-center"
-                    >
-                        <Menubar>
-                            <MenubarMenu>
-                                <MenubarTrigger>{mode}</MenubarTrigger>
-                                <MenubarContent>
-                                    <MenubarRadioGroup value={mode}>
-                                        <MenubarRadioItem onClick={() => {onChangeMode('design')}} value="design">Design</MenubarRadioItem>
-                                        <MenubarRadioItem onClick={() => {onChangeMode('form')}} value="form">Form</MenubarRadioItem>
-                                        <MenubarRadioItem onClick={() => {onChangeMode('viewer')}} value="viewer">View</MenubarRadioItem>
-                                    </MenubarRadioGroup>
-                                </MenubarContent>
-                            </MenubarMenu>
-                            <MenubarMenu>
-                                <MenubarTrigger>File</MenubarTrigger>
-                                <MenubarContent>
-                                    <MenubarSeparator />
-                                    <MenubarSub>
-                                        <MenubarSubTrigger>Template</MenubarSubTrigger>
-                                        <MenubarSubContent>
-                                            <MenubarItem onClick={fileClick}>
-                                                Upload Template <input id="loadtemp" type="file" accept="application/json" onChange={(e) => handleLoadTemplate(e, User.current)} className="hidden" />
-                                            </MenubarItem>
-                                        </MenubarSubContent>
-                                    </MenubarSub>
-                                    <MenubarSub>
-                                        <MenubarSubTrigger>PDFs</MenubarSubTrigger>
-                                        <MenubarSubContent>
-                                            <MenubarItem onClick={() => generatePDF(User.current)}>
-                                                Generate PDFs
-                                            </MenubarItem>
-                                            {mode === 'design' && (
-                                                <MenubarItem onClick={changeBaseclick}>
-                                                    Generate Base PDF <input id="basetemp" type="file" accept="application/pdf" onChange={(e) => onChangeBasePDF(e)} className="hidden" />
-                                                </MenubarItem>
-                                            )}
-                                            <MenubarItem>
-                                                Download PDFs
-                                            </MenubarItem>
-                                        </MenubarSubContent>
-                                    </MenubarSub>
-                                    <MenubarSub>
-                                        <MenubarSubTrigger>Inputs</MenubarSubTrigger>
-                                        <MenubarSubContent>
-                                            <MenubarItem>
-                                                Upload Inputs
-                                            </MenubarItem>
-                                            <MenubarItem>
-                                                Download Inputs
-                                            </MenubarItem>
-                                            <MenubarItem>
-                                                Reset Inputs
-                                            </MenubarItem>
-                                            <MenubarItem>
-                                                Save Inputs
-                                            </MenubarItem>
-                                        </MenubarSubContent>
-                                    </MenubarSub>
-                                    <MenubarSub>   
-                                        <MenubarMenu>
-                                            <Select onValueChange={(value: Lang) => setLang(value)} defaultValue={lang}>
-                                                <SelectTrigger className="w-[180px] border-0 bg-transparent">
-                                                    <SelectValue placeholder={lang} />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                    <SelectLabel>Language</SelectLabel>
-                                                    <SelectItem value="en">English</SelectItem>
-                                                    <SelectItem value="ja">Japanese</SelectItem>
-                                                    <SelectItem value="ar">Arabic</SelectItem>
-                                                    <SelectItem value="th">Thai</SelectItem>
-                                                    <SelectItem value="pl">Polish</SelectItem>
-                                                    <SelectItem value="it">Italian</SelectItem>
-                                                    <SelectItem value="de">German</SelectItem>
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
-                                        </MenubarMenu>
-                                    </MenubarSub>
-                                </MenubarContent>
-                            </MenubarMenu>
-                            <MenubarMenu>
-                                <MenubarTrigger>Edit</MenubarTrigger>
-                                <MenubarContent>
-                                    <MenubarItem>
-                                        Undo <MenubarShortcut>⌘Z</MenubarShortcut>
-                                    </MenubarItem>
-                                    <MenubarItem>
-                                        Redo <MenubarShortcut>⇧⌘Z</MenubarShortcut>
-                                    </MenubarItem>
-                                    <MenubarSeparator />
-                                    <MenubarSub>
-                                        <MenubarSubTrigger>Find</MenubarSubTrigger>
-                                        <MenubarSubContent>
-                                            <MenubarItem>Find...</MenubarItem>
-                                            <MenubarItem>Find Next</MenubarItem>
-                                            <MenubarItem>Find Previous</MenubarItem>
-                                        </MenubarSubContent>
-                                    </MenubarSub>
-                                    <MenubarSeparator />
-                                    <MenubarItem>Cut</MenubarItem>
-                                    <MenubarItem>Copy</MenubarItem>
-                                    <MenubarItem>Paste</MenubarItem>
-                                </MenubarContent>
-                            </MenubarMenu>
-                        </Menubar>
-                    </HoverBorderGradient>
-                </header> )
-                : (
-                    <PdfMenubar
-                        mode={mode}
-                        onChangeMode={onChangeMode}
-                        onLoadTemplate={(e: React.ChangeEvent<HTMLInputElement>) => handleLoadTemplate(e, User.current)}
-                        onGeneratePDF={() =>generatePDF(User.current)}
-                    />
-                )
-            }
-    {/* <header className="z-50" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginRight: 120, }}>
-        <Menubar>
-            <MenubarMenu>
-                <MenubarTrigger>{mode}</MenubarTrigger>
-                <MenubarContent>
-                    <MenubarRadioGroup value={mode}>
-                        <MenubarRadioItem onClick={() => {onChangeMode('design')}} value="design">Design</MenubarRadioItem>
-                        <MenubarRadioItem onClick={() => {onChangeMode('form')}} value="form">Form</MenubarRadioItem>
-                        <MenubarRadioItem onClick={() => {onChangeMode('viewer')}} value="viewer">View</MenubarRadioItem>
-                    </MenubarRadioGroup>
-                </MenubarContent>
-            </MenubarMenu>
-        </Menubar>
-        <span style={{ margin: "0 1rem" }}>:</span>
-        <select onChange={(e) => {
-          setLang(e.target.value as Lang)
-          if (User.current) {
-            User.current.updateOptions({ lang: e.target.value as Lang })
-          }
-        }} value={lang}>
-          <option value="en">English</option>
-          <option value="ja">Japanese</option>
-          <option value="ar">Arabic</option>
-          <option value="th">Thai</option>
-          <option value="pl">Polish</option>
-          <option value="it">Italian</option>
-          <option value="de">German</option>
-        </select>
-        <span style={{ margin: "0 1rem" }}>/</span>
-        <label style={{ width: 180 }}>
-          Change BasePDF
-          <input type="file" accept="application/pdf" onChange={onChangeBasePDF} />
-        </label>
-        <span style={{ margin: "0 1rem" }}>/</span>
-        <label style={{ width: 180 }}>
-          Load Template
-          <input type="file" accept="application/json" onChange={(e) => handleLoadTemplate(e, User.current)} />
-        </label>
-        <span style={{ margin: "0 1rem" }}>/</span>
-        <button onClick={onDownloadTemplate}>Download Template</button>
-        <span style={{ margin: "0 1rem" }}>/</span>
-        <button onClick={() => onLocalSaveTemplate()}>Save Template</button>
-        <span style={{ margin: "0 1rem" }}>/</span>
-        <button onClick={onResetTemplate}>Reset Template</button>
-        <span style={{ margin: "0 1rem" }}>/</span>
-        <button onClick={() => generatePDF(User.current)}>Generate PDF</button>
-      </header> */}
-      
-        <div 
-            ref={UserRef} 
-            style={{ width: '100%', height: `calc(97vh - ${headerHeight}px)` }} 
-            className={cn(
-                "rounded-l-[22px] overflow-hidden bg-transparent z-[20]",
-                (mode === 'design' && 'rounded-r-[22px]')
-            )}
-        />
-        </BackgroundGradient>
+        <div className="overflow-hidden rounded-[0.5rem] border bg-background shadow w-full">
+            <header className="z-50 w-full flex justify-between p-2 items-center border-b overflow-x-auto">
+                <Menubar>
+                    <MenubarMenu>
+                        <MenubarTrigger disabled={isRequesting} className="p-[5px]">
+                            {mode}
+                        </MenubarTrigger>
+                        <MenubarContent>
+                            <MenubarRadioGroup value={mode} >
+                                <MenubarRadioItem onClick={() => {onChangeMode('design')}} value="design">Design</MenubarRadioItem>
+                                <MenubarRadioItem onClick={() => {onChangeMode('form')}} value="form">Form</MenubarRadioItem>
+                                <MenubarRadioItem onClick={() => {onChangeMode('viewer')}} value="viewer">View</MenubarRadioItem>
+                            </MenubarRadioGroup>
+                        </MenubarContent>
+                    </MenubarMenu>
+                </Menubar>
+                <div className="ml-auto flex w-full space-x-2 sm:justify-end overflow-x-auto">
+                    {mode === 'design' && (
+                        <>  
+                            <TooltipWrap trigger="Save Template">
+                                <Button variant="playground" size="icon" onClick={() => onRemoteSaveTemplate()} disabled={isRequesting} >
+                                    <FaRegSave className="h-4 w-4" />
+                                </Button>
+                            </TooltipWrap>
+                            <TooltipWrap trigger="Change Base PDF" >
+                                <Button variant="playground" size="icon" onClick={changeBaseClick} disabled={isRequesting}>
+                                    <LuFileEdit className="h-4 w-4" />
+                                    <input 
+                                        ref={hiddenBasePdf} 
+                                        type="file" 
+                                        accept="application/pdf" 
+                                        onChange={onChangeBasePDF}
+                                        className="hidden" 
+                                        disabled={isRequesting}
+                                    />
+                                </Button>
+                            </TooltipWrap>
+                        </>
+                    )}
+                    <TooltipWrap trigger="CSV to PDFs" >
+                            <Button variant="playground" disabled={isRequesting} size="icon" onClick={loadCSVClick}>
+                                <CiViewTable className="h-4 w-4" />
+                                <input 
+                                    ref={hiddenLoadCSV} 
+                                    type="file" 
+                                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                    onChange={onDownloadPDFsByZip}
+                                    className="hidden"
+                                    disabled={isRequesting}
+                                />
+                            </Button>
+                    </TooltipWrap>
+                    <TooltipWrap trigger="Share Template">
+                        <Button variant="playground" size="icon" onClick={onOpen}>
+                            <IoShareSocialOutline className="h-4 w-4" />
+                        </Button>
+                    </TooltipWrap>
+                    <TooltipWrap trigger="Upload Template" >
+                        <Button variant="playground" size="icon" onClick={loadTemplateClick} disabled={isRequesting}>
+                            <TbFileUpload className="h-4 w-4" />
+                            <input 
+                                ref={hiddenLoadTemplate} 
+                                type="file" 
+                                accept="application/json" 
+                                onChange={(e) => handleLoadTemplate(e, User.current)} 
+                                className="hidden"
+                                disabled={isRequesting}
+                            />
+                        </Button>
+                    </TooltipWrap>
+                    <TooltipWrap trigger="Download Template">
+                        <Button variant="playground" size="icon" onClick={onDownloadTemplate} disabled={isRequesting}>
+                            <TbFileDownload className="h-4 w-4" />
+                        </Button>
+                    </TooltipWrap>
+                    <TooltipWrap trigger="View PDF">
+                        <Button variant="playground" size="icon" onClick={() => generatePDF(User.current)}>
+                            <FaRegFileImage className="h-4 w-4" />
+                        </Button>
+                    </TooltipWrap>
+                    <DropdownMenu>
+                        <TooltipWrap trigger="Private Menu">
+                            <DropdownMenuTrigger asChild disabled={isRequesting}>
+                                <Button variant="playground" size="icon" disabled={isRequesting}>
+                                    <GoKebabHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                        </TooltipWrap>
+                        <DropdownMenuContent className="w-30" side="bottom">
+                            <DropdownMenuLabel>Private Menu</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem onClick={onResetTemplate} disabled={isRequesting}>
+                                    <MdDelete className="h-4 w-4 mr-2 text-red-500" />
+                                    <span className="text-red-500">Reset Template</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </header>
+            <div 
+                ref={UserRef} 
+                style={{ width: '100%', height: `calc(97vh - ${headerHeight}px)` }} 
+                className={cn(
+                    "overflow-hidden bg-transparent z-[20]",
+                )}
+            />
+        </div>
     );
 }
  

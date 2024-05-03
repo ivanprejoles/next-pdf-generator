@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { BentoGridDemo } from "@/app/(marketing)/_components/Blocks/_components/BentoInfo";
+import AccordionInfo from "@/app/(marketing)/_components/Blocks/_components/Accordion-info";
 
 export function LampDemo() {
   return (
@@ -99,7 +100,8 @@ export const LampContainer = ({
       <div className="relative z-50 flex -translate-y-[70rem] flex-col items-center px-5">
         {children}
       </div>
-      <BentoGridDemo />
+      <AccordionInfo />
+      {/* <BentoGridDemo /> */}
     </div>
   );
 };

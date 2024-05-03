@@ -1,20 +1,22 @@
 'use client'
 
-import { Check, Upload } from "lucide-react";
+import { Check } from "lucide-react";
+import { IconType } from "react-icons/lib";
 
 interface ContentButtonInterface {
     title: string,
     verified: boolean,
     input: React.ReactElement,
     onClick: () => void,
-    
+    Icon: IconType
 }
 
 const ContentButton = ({
     title,
     verified,
     input,
-    onClick
+    onClick,
+    Icon
 }: ContentButtonInterface) => {
     return (  
         <button onClick={onClick} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6  text-white inline-block" >
@@ -30,7 +32,7 @@ const ContentButton = ({
                     ? (
                         <>
                             <Check
-                                className="text-green-500"
+                                className="text-green-400"
                                 width={20}
                                 height={20}
                             />
@@ -38,10 +40,9 @@ const ContentButton = ({
                     ) 
                     : (
                         <>
-                            <Upload
-                                className="text-slate-300"
-                                width={20}
-                                height={20}
+                            <Icon
+                                className="text-green-400"
+                                size='20px'
                             />
                         </>
                     )}

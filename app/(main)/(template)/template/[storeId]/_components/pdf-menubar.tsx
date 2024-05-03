@@ -78,9 +78,9 @@ export function PdfMenubar({
                         <MenubarTrigger>{mode}</MenubarTrigger>
                         <MenubarContent>
                             <MenubarRadioGroup value={mode}>
-                                <MenubarRadioItem onClick={() => {onChangeMode('design'); console.log(1)}} value="design">Design</MenubarRadioItem>
-                                <MenubarRadioItem onClick={() => {onChangeMode('form'); console.log(2)}} value="form">Form</MenubarRadioItem>
-                                <MenubarRadioItem onClick={() => {onChangeMode('viewer'); console.log(3)}} value="viewer">View</MenubarRadioItem>
+                                <MenubarRadioItem onClick={() => {onChangeMode('design')}} value="design">Design</MenubarRadioItem>
+                                <MenubarRadioItem onClick={() => {onChangeMode('form')}} value="form">Form</MenubarRadioItem>
+                                <MenubarRadioItem onClick={() => {onChangeMode('viewer')}} value="viewer">View</MenubarRadioItem>
                             </MenubarRadioGroup>
                         </MenubarContent>
                     </MenubarMenu>

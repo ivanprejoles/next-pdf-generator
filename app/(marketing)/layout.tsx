@@ -1,3 +1,5 @@
+import Head from 'next/head';
+
 import { Footer } from "./_components/footer";
 import { Navbar } from "./_components/navbar";
 
@@ -9,7 +11,7 @@ const MarketingLayout = ({
   return (
     <div className="h-full">
       <Navbar />
-      <main className="pt-[59px] h-auto">
+      <main className="pt-[59px] h-auto bg-white dark:bg-black">
         {children}
       </main>
       <Footer />

@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toastError } from '@/lib/toast-method';
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -51,13 +52,14 @@ const CreateStoreModal = () => {
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await axios.post('/api/template', values)
+            await axios.post('/api/store', values)
 
             form.reset()
             Router.refresh()
             window.location.reload()
         } catch (error) {
-            console.log(error)
+            toastError('We encountered an error creating first server. Please check your network connection and try again.')
+            console.error('[Create Server] : cannot create server')
         }
     }
     

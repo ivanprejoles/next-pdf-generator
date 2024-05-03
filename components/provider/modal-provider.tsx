@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import CreateStoreModal from "../modals/create-store-modal";
+
 import AddStoreModal from "../modals/add-store-modal";
+import ReduxProvider from "./redux-provider";
+import ShareLinkModal from "../modals/share-link-modal";
 
 const ModalProvider = () => {
     const [isMounted, setIsMounted] = useState(false)
@@ -17,7 +19,10 @@ const ModalProvider = () => {
 
     return (  
         <>
-            <AddStoreModal />
+            <ReduxProvider>
+                <AddStoreModal />
+                <ShareLinkModal />
+            </ReduxProvider>
         </>
     );
 }

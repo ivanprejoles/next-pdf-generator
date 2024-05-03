@@ -74,7 +74,7 @@ export function ThreeDCardProduct() {
             onClick={() => setNextBase()}
             className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
           >
-            next →
+            Change  →
           </CardItem>
           <CardItem
             disabled={isUsed}
@@ -83,7 +83,7 @@ export function ThreeDCardProduct() {
             onClick={() => {if(!isUsed){onChangeBasePDF()}}}
             className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-300"
           >
-            {added ? ('✔ Pdf uploaded') : ('Upload Pdf')}
+            {isUsed ? ('Template Disabled') : (added ? ('✔ Template Used') : ('Use My Template'))}
           </CardItem>
         </div>
       </CardBody>

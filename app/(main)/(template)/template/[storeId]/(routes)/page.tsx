@@ -1,5 +1,5 @@
 import { auth, redirectToSignIn } from "@clerk/nextjs";
-import PdfGenerator from "../_components/pdf-generator";
+import WrappedPDFGen from "../_components/wrapped-pdf-gen";
 
 export default function Home() {
   const {
@@ -10,7 +10,7 @@ export default function Home() {
   }
   return (
     <main className="w-full h-full p-2 px-3 bg-[#EDEADE] dark:bg-black">
-      <PdfGenerator />
+      <WrappedPDFGen />
     </main>
   );
 }

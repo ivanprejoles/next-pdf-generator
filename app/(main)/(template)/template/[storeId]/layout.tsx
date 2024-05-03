@@ -1,4 +1,4 @@
-import TemplateNavBar from "./_components/template-navbar";
+import MainNav from "../_components/MainNav";
 
 const MainLayout = ({
     children
@@ -7,7 +7,7 @@ const MainLayout = ({
 }) => {   
     return (  
         <div className="h-full flex flex-col">
-            <TemplateNavBar />
+            <MainNav />
             <main className="pt-[56px] w-full h-full items-center">
                 {children}
             </main>

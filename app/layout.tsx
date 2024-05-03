@@ -5,6 +5,7 @@ import "./globals.css";
 import 'react-toastify/dist/ReactToastify.css';
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
+import { Analytics } from "@vercel/analytics/react"
 
 import { ToastContainer} from 'react-toastify'
 import { ThemeProvider } from "@/components/provider/theme-provider";
@@ -15,13 +16,14 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`
+    template: `%s | ${siteConfig.template}`,
+
   },
   description: siteConfig.description,
   icons: [
     {
-      url: '/images/logoipsum-265.svg',
-      href: '/images/logoipsum-265.svg'
+      url: '/images/link-image.png',
+      href: '/images/pdf-gen-high-resolution-logo-black-transparent.svg'
     }
   ]
 };
@@ -51,6 +53,7 @@ export default function RootLayout({
               autoClose={2000}
             />
             {children}
+            <Analytics />
           </ThemeProvider>
         </body>
       </html>
