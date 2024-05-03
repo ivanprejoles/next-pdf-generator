@@ -11,7 +11,7 @@ The library offers 2 models designed to address different user needs.
 
 ### Models status
 - [x] Visitor Model is completed :tada:
-- [ ] User Model is not yet completed
+- [x] User Model is completed :tada:
 <br>
 
 1. Visitor Model
