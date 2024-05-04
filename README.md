@@ -9,12 +9,7 @@ The link is provided here [Pdf generator](https://next-template-generator.vercel
 The library offers 2 models designed to address different user needs.
 <br>
 
-### Models status
-- [x] Visitor Model is completed :tada:
-- [ ] User Model is not yet completed
-<br>
-
-1. Visitor Model
+1. Guest Model
 
 <br>
 
