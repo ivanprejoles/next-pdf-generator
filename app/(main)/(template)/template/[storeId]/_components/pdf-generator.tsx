@@ -192,21 +192,30 @@ const PdfGenerator = () => {
     const onRemoteSaveTemplate = async () => {
         if (User.current && reduxTemplate[storeId] && mode === 'design') {
             const userTemplate = User.current.getTemplate()
-            await axios.patch(`/api/template/${storeId}`, {templateData: JSON.stringify(userTemplate)})
-            .then((response: any) => {
-                if (response.status === 200 && reduxTemplate[storeId] !== userTemplate) {
-                    onLocalSaveTemplate()
-                    toastSuccess('Template Saved')
-                }
-            })
-            .catch((error) => {
-                toastError('We encountered an error saving your template. Please check your network connection and try again.')
+            const stringifiedData = JSON.stringify(userTemplate)
+
+            if (stringifiedData.length <= 1048576) {
+                toastId.current = toastLoading('Saving your data...')
+                await axios.patch(`/api/template/${storeId}`, {templateData: stringifiedData})
+                .then((response: any) => {
+                    if (response.status === 200 && reduxTemplate[storeId] !== userTemplate) {
+                        onLocalSaveTemplate()
+                        toastSuccess('Template Saved')
+                    }
+                })
+                .catch(() => {
+                    toastError('We encountered an error saving your template. Please check your network connection and try again.')
+                    console.error('[Save Template] : cannot save your template')
+                })
+                .finally( async () => {
+                    toastDismiss(toastId.current); 
+                    await delayFunction(2000)
+                    setIsRequesting(false)
+                })
+            } else {
+                toastError('Sending beyond 1mb of data is prohibited.')
                 console.error('[Save Template] : cannot save your template')
-            })
-            .finally( async () => {
-                await delayFunction(2000)
-                setIsRequesting(false)
-            })
+            }
         }
     }
 
@@ -296,11 +305,14 @@ const PdfGenerator = () => {
                         console.warn('[Missing Template] : Missing template. Try to refresh')
                     }
                 }
-                reader.onerror = (error) => {
+                reader.onerror =  async (error) => {
                     toastDismiss(toastId.current);
-                    toastError('Currently supports single-page PDFs')
-                    toastWarning('For urgent 2-page use, copy-paste single input from page 1 to page 2')
                     console.error('[Protection Error] : Currently supports single-page PDFs')
+                    toastError('Currently supports single-page PDFs')
+                    await delayFunction(500)
+                    toastWarning("For urgent multiple page use, copy-paste the content from page 1 to another page. Be sure to remove the 'copy' prefix from the field names so they reference the original fields.")
+                    await delayFunction(500)
+                    toastWarning('If it does not work, your pdf is probably encrypted. ')
                     setIsRequesting(false)
                     return
                 }

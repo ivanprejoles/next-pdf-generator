@@ -6,6 +6,7 @@ import {
 } from '@pdfme/schemas';
 import {toastError, toastWarning} from '@/lib/toast-method'
 import fontObjList from '@/lib/fontsLibrary';
+import delayFunction from './delayMethod';
 
 export const getFontsData = async () => {
     const fontDataList = await Promise.all(
@@ -67,7 +68,10 @@ export const generatePDF = async (currentRef: Designer | Form | Viewer | null) =
   } catch (error) {
     console.error('[View PDF] : Currently supporting single-page PDFs' )
     toastWarning('Currently supporting single-page PDFs')
-    toastWarning('For urgent 2-page use, copy-paste the content from page 1 to page 2')
+    await delayFunction(500)
+    toastWarning("For urgent multiple page use, copy-paste the content from page 1 to another page. Be sure to remove the 'copy' prefix from the field names so they reference the original fields.")
+    await delayFunction(500)
+    toastWarning('If it does not work, your pdf is probably encrypted. ')
   }
 };
 

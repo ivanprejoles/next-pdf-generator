@@ -14,7 +14,7 @@ type CardProps = React.ComponentProps<typeof Card>
 const HowTo = [
   {
     key: 'item1',
-    triggerName: 'How to generate PDFs from CSV?',
+    triggerName: 'How to generate PDFs from Data sheet?',
     description: 'PDF generation can be achieved by referencing the cells of first row of the data sheet to the edit field name.',
     image: '/howTo/csvToPDf.png',
     alt: 'pdf to csv image'
@@ -28,8 +28,8 @@ const HowTo = [
   },
   {
     key: 'item3',
-    triggerName: 'Why two-page template does not work?',
-    description: 'Two-page templates are not currently supported. However, for urgent needs, you can achieve a similar layout by copying and pasting the desired field from the first page to the second page. If it still does not work, ',
+    triggerName: 'Why multiple page template does not work?',
+    description: "multiple page templates are not currently supported. However, for urgent needs, you can achieve a similar layout by copying and pasting the desired field from the first page to the another page. Be sure to remove the 'copy' prefix from the field names so they reference the original fields. If it still does not work, your pdf is probably encrypted.",
     image: '/howTo/accessPages.png',
     alt: '2 page template image'
   },
@@ -52,7 +52,7 @@ const AccordionInfo = ({ className, ...props }: CardProps) => {
             <Card className={cn("w-full", className)} {...props}>
               <CardContent className="grid">
                   <div className="flex flex-col sm:flex-row gap-2 rounded-md border p-4 bg-transparent h-[400px] justify-between">
-                      <p className="text-md font-medium leading-none ">
+                      <p className="text-lg font-serif leading-none max-w-2xl">
                         {item.description}
                       </p>
                       <div className="w-auto" style={{ position: 'relative' }}>

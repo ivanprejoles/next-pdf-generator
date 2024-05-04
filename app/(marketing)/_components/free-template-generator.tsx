@@ -220,10 +220,10 @@ const FreeTemplateGenerator = ({
             toastDismiss(toastId.current);
             console.error('[Protection Error] : Currently supports single-page PDFs')
             toastError('Currently supports single-page PDFs')
-            await delayFunction(1000)
-            toastWarning('For urgent 2-page use, copy-paste single input from page 1 to page 2')
-            await delayFunction(1000)
-            toastWarning('If it does not work, your pdf is probably encrypted')
+            await delayFunction(500)
+            toastWarning("For urgent multiple page use, copy-paste the content from page 1 to another page. Be sure to remove the 'copy' prefix from the field names so they reference the original fields.")
+            await delayFunction(500)
+            toastWarning('If it does not work, your pdf is probably encrypted. ')
         } finally {
             setLoading(false)
         }
