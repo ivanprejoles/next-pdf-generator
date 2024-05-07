@@ -1,7 +1,7 @@
 # next-pdf-generator
 Powered by [Pdfme](https://github.com/pdfme/pdfme), this Next.js application offers PDF generation functionalities.
 <br>
-The link is provided here [Pdf generator](https://next-template-generator.vercel.app/).
+The link is provided here [PDF Gen](https://next-template-generator.vercel.app/).
 <br>
 <br>
 <br>
@@ -17,7 +17,7 @@ Suitable for generating PDFs rapidly. No setup is necessary; simply feed in data
 
 <br>
 
-![Image of model type visitor from next template generator.](/assets/images/modelTypeVisit.png)
+![Image of model type visitor from PDF Gen.](/assets/images/modelTypeVisit.png)
 
 <br>
 
@@ -29,7 +29,7 @@ This User model lets you save and reuse your data for future use, expand your te
 
 <br>
 
-![Image of model type user from next template generator.](/assets/images/modelTypeUser.png)
+![Image of model type user from PDF Gen.](/assets/images/modelTypeUser.png)
 
 <br>
 <br>
