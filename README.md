@@ -1,5 +1,11 @@
-# next-pdf-generator
-Powered by [Pdfme](https://github.com/pdfme/pdfme), this Next.js application offers PDF generation functionalities.
+# PDF Gen (NextJS)
+**PDF Automation with PDF Gen:**
+
+* Bulk PDFs from Data Sheets (CSV, Excel, etc.)
+* Design Custom Fillable Forms
+* Multi-Page Templates (Instructions Included)
+
+(Built with Pdfme)
 <br>
 The link is provided here [PDF Gen](https://next-template-generator.vercel.app/).
 <br>
