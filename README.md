@@ -1,5 +1,5 @@
 # next-pdf-generator
-Under React Framework NextJs, next template generator is built upon [Pdfme](https://github.com/pdfme/pdfme).
+Powered by [Pdfme](https://github.com/pdfme/pdfme), this Next.js application offers PDF generation functionalities.
 <br>
 The link is provided here [Pdf generator](https://next-template-generator.vercel.app/).
 <br>
