@@ -1,11 +1,18 @@
-# next-pdf-generator
-Under React Framework NextJs, next template generator is built upon [Pdfme](https://github.com/pdfme/pdfme).
+# PDF Gen (NextJS)(Built with [Pdfme](https://github.com/pdfme/pdfme))
+**PDF Automation with PDF Gen:**
+
+* Bulk PDFs from Data Sheets (CSV, Excel, etc.)
+* Design Custom Fillable Forms
+* Multi-Page Templates (Instructions Included)
+
 <br>
-The link is provided here [Pdf generator](https://next-template-generator.vercel.app/).
+The link is provided here [PDF Gen](https://next-template-generator.vercel.app/).
 <br>
 <br>
 <br>
+
 ## Models
+
 The library offers 2 models designed to address different user needs.
 <br>
 
@@ -17,7 +24,7 @@ Suitable for generating PDFs rapidly. No setup is necessary; simply feed in data
 
 <br>
 
-![Image of model type visitor from next template generator.](/assets/images/modelTypeVisit.png)
+![Image of model type visitor from PDF Gen.](/assets/images/modelTypeVisit.png)
 
 <br>
 
@@ -29,7 +36,7 @@ This User model lets you save and reuse your data for future use, expand your te
 
 <br>
 
-![Image of model type user from next template generator.](/assets/images/modelTypeUser.png)
+![Image of model type user from PDF Gen.](/assets/images/modelTypeUser.png)
 
 <br>
 <br>
