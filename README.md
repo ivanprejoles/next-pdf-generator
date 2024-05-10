@@ -10,7 +10,9 @@ The link is provided here [PDF Gen](https://next-template-generator.vercel.app/)
 <br>
 <br>
 <br>
+
 ## Models
+
 The library offers 2 models designed to address different user needs.
 <br>
 
