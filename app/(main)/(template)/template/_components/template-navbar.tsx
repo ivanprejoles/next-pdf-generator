@@ -8,7 +8,7 @@ import { ModeToggle } from "./mode-toggle";
 import StoreSwitcher from "@/components/store-switcher";
 
 import {addSwitchers} from '@/lib/reduxFeatures/templateslice'
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useDispatch, useSelector } from 'react-redux';
 import { toastError, toastWarning } from "@/lib/toast-method";
 
 type SwitcherType = {
@@ -17,8 +17,8 @@ type SwitcherType = {
 
 const TemplateNavBar = () => {
 
-    const template = useAppSelector((state: any) => state.userTemplate)
-    const dispatch = useAppDispatch()
+    const template = useSelector((state: any) => state.userTemplate)
+    const dispatch = useDispatch()
     useEffect(() => {
         const fetchData = async () => {
             await axios.post('/api/stores')

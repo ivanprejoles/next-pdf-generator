@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 
 import { useCreateModal } from "@/hooks/use-create-store-modal";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useDispatch, useSelector } from 'react-redux';
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
@@ -30,7 +30,7 @@ export default function StoreSwitcher ({
     const StoreModal = useCreateModal()
     const Params = useParams()
     const Router = useRouter()
-    const template = useAppSelector((state: any) => state.userTemplate)
+    const template = useSelector((state: any) => state.userTemplate)
 
     const [open, setOpen] = useState(false)
 

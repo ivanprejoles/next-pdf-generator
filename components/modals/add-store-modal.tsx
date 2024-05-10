@@ -27,7 +27,7 @@ import { useRouter } from 'next/navigation';
 import { useCreateModal } from '@/hooks/use-create-store-modal';
 
 import { addSwitcher } from '@/lib/reduxFeatures/templateslice';
-import { useAppDispatch } from '@/lib/hooks';
+import { useDispatch, useSelector } from 'react-redux';
 import { toastError, toastSuccess } from '@/lib/toast-method';
 
 const formSchema = z.object({
@@ -37,7 +37,7 @@ const formSchema = z.object({
 })
 
 const AddStoreModal = () => {
-    const dispatch = useAppDispatch()
+    const dispatch = useDispatch()
     const Router = useRouter()
     const { isOpen, onClose } = useCreateModal()
     

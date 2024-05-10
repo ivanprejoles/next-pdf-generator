@@ -1,7 +1,9 @@
-import { templateStore } from "@/lib/store";
-import { Provider } from "react-redux";
+'use client'
 
-const store = templateStore();
+import { persistor, store } from "@/lib/store";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+
 
 const ReduxProvider = ({
     children
@@ -10,7 +12,9 @@ const ReduxProvider = ({
 }) => {
     return (  
         <Provider store={store}>
-            {children}
+            <PersistGate loading={null} persistor={persistor}>
+                {children}
+            </PersistGate>
         </Provider>
     );
 }

@@ -13,7 +13,7 @@ import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarRadioGroup, M
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { addTemplate, removeTemplate } from "@/lib/reduxFeatures/templateslice";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useDispatch, useSelector } from 'react-redux';
 import { useShareModal } from "@/hooks/use-share-link-modal";
 import { Button } from "@/components/ui/button";
 import { FaRegFileImage } from "react-icons/fa6";
@@ -27,9 +27,9 @@ const headerHeight = 65;
 type Mode = "form" | "viewer" | 'design';
 
 const PdfGenerator = () => {
-    const dispatch = useAppDispatch()
-    const reduxTemplate = useAppSelector((state: any) => state.userTemplate.value.templates)
-    const reduxSwitcher = useAppSelector((state: any) => state.userTemplate.value.switcher)
+    const dispatch = useDispatch()
+    const reduxTemplate = useSelector((state: any) => state.userTemplate.value.templates)
+    const reduxSwitcher = useSelector((state: any) => state.userTemplate.value.switcher)
     const {storeId} = useParams<{storeId: string}>()
     const {
         onOpen

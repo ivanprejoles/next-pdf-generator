@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 
 import { useShareModal } from '@/hooks/use-share-link-modal';
 import { useOrigin } from '@/hooks/use-origin';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useDispatch, useSelector } from 'react-redux';
 import { addSwitcher } from '@/lib/reduxFeatures/templateslice';
 import delayFunction from '@/lib/delayMethod';
 import { toastError, toastSuccess } from '@/lib/toast-method';
@@ -26,8 +26,8 @@ import { toastError, toastSuccess } from '@/lib/toast-method';
 const ShareLinkModal = () => {
     const { isOpen, onClose } = useShareModal()
     const {storeId} = useParams<{storeId: string}>()
-    const template = useAppSelector((state: any) => state.userTemplate.value)
-    const dispatch = useAppDispatch()
+    const template = useSelector((state: any) => state.userTemplate.value)
+    const dispatch = useDispatch()
     const origin = useOrigin()
 
     const [copied, setCopied] = useState(false)

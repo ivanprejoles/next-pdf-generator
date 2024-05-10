@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { Template } from '@pdfme/common';
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice} from "@reduxjs/toolkit";
 
 type initialStateType = {
     value: {
@@ -88,4 +88,4 @@ export const {
     removeTemplate
 } = templateSlice.actions
 
-export default templateSlice
+export default templateSlice.reducer

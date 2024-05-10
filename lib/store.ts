@@ -1,16 +1,24 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import templateSlice from './reduxFeatures/templateslice'
+import {persistStore, persistReducer} from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 
-export const templateStore = () => {
-  return configureStore({
-    reducer: {
-        userTemplate: templateSlice.reducer
-    }
-  })
+const rootReducer = combineReducers({
+  userTemplate: templateSlice,
+});
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  version: 1,
 }
 
-// Infer the type of makeStore
-export type AppStore = ReturnType<typeof templateStore>
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<AppStore['getState']>
-export type AppDispatch = AppStore['dispatch']
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }),
+});
+
+export const persistor = persistStore(store);
